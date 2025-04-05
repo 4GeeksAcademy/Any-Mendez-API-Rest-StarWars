@@ -217,6 +217,61 @@ def delete_people_favorites(people_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/planets', methods=['POST'])
+def create_planet():
+    try:
+        data = request.get_json()
+
+        if not data or 'name' not in data or 'diameter' not in data or 'population' not in data:
+            return jsonify({'error': "Datos incompletos"}), 400
+        
+        new_planet = Planet(
+            name = data['name'],
+            diameter = data['diameter'],
+            gravity = data['gravity'],
+            climate = data['climate'],
+            population = data['population']
+        )
+
+        db.session.add(new_planet)
+        db.session.commit()
+
+        return jsonify({'response': 'Planeta creado correctamente'}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/people', methods=['POST'])
+def create_people():
+    try:
+        data = request.get_json()
+
+        if not data or 'name' not in data or 'birth_year' not in data or 'eye_color' not in data:
+            return jsonify({'error': "Datos incompletos"}), 400
+        
+        new_people = People(
+            name = data['name'],
+            birth_year = data['birth_year'],
+            eye_color = data['eye_color'],
+            gender = data['gender'],
+            hair_color = data['hair_color'],
+            height = data['height']
+        )
+        
+        db.session.add(new_people)
+        db.session.commit()
+
+        return jsonify({'response': 'Personaje creado correctamente'}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+    
+
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
