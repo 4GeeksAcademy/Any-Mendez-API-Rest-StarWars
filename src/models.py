@@ -26,6 +26,9 @@ class User(db.Model):
 # #Relaciones
     favorites: Mapped[list["Favorite"]] = relationship(back_populates='user')
 
+    def __str__(self):
+        return self.username
+
     def serialize(self):
         return {
             "id": self.id,
@@ -47,6 +50,9 @@ class People(db.Model):
     height: Mapped[str] = mapped_column(String(120), nullable=False)
 
     favorites: Mapped[list["Favorite"]] = relationship(back_populates='people')
+
+    def __str__(self):
+        return self.name
 
     def serialize(self):
         return {
@@ -70,6 +76,9 @@ class Planet(db.Model):
 
     favorites: Mapped[list["Favorite"]] = relationship(back_populates='planet')
 
+    def __str__(self):
+        return self.name
+
     def serialize(self):
         return {
             "id": self.id,
@@ -92,6 +101,9 @@ class Vehicle(db.Model):
 
     favorites: Mapped[list["Favorite"]] = relationship(
         back_populates='vehicle')
+
+    def __str__(self):
+        return self.model
 
     def serialize(self):
         return {
