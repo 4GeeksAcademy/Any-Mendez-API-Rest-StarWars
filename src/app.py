@@ -224,13 +224,13 @@ def create_planet():
 
         if not data or 'name' not in data or 'diameter' not in data or 'population' not in data:
             return jsonify({'error': "Datos incompletos"}), 400
-        
+
         new_planet = Planet(
-            name = data['name'],
-            diameter = data['diameter'],
-            gravity = data['gravity'],
-            climate = data['climate'],
-            population = data['population']
+            name=data['name'],
+            diameter=data['diameter'],
+            gravity=data['gravity'],
+            climate=data['climate'],
+            population=data['population']
         )
 
         db.session.add(new_planet)
@@ -241,7 +241,7 @@ def create_planet():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-    
+
 
 @app.route('/people', methods=['POST'])
 def create_people():
@@ -250,16 +250,16 @@ def create_people():
 
         if not data or 'name' not in data or 'birth_year' not in data or 'eye_color' not in data:
             return jsonify({'error': "Datos incompletos"}), 400
-        
+
         new_people = People(
-            name = data['name'],
-            birth_year = data['birth_year'],
-            eye_color = data['eye_color'],
-            gender = data['gender'],
-            hair_color = data['hair_color'],
-            height = data['height']
+            name=data['name'],
+            birth_year=data['birth_year'],
+            eye_color=data['eye_color'],
+            gender=data['gender'],
+            hair_color=data['hair_color'],
+            height=data['height']
         )
-        
+
         db.session.add(new_people)
         db.session.commit()
 
@@ -268,8 +268,114 @@ def create_people():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-    
-    
+
+
+@app.route('/planets/<int:planet_id>', methods=['PUT'])
+def update_planet(planet_id):
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({'error': "Datos incompletos"}), 400
+
+        planet_to_update = db.session.execute(
+            db.select(Planet).filter_by(id=planet_id)).scalar()
+
+        if planet_to_update:
+
+            if 'name' in data:
+                planet_to_update.name = data['name']
+            if 'diameter' in data:
+                planet_to_update.diameter = data['diameter']
+            if 'gravity' in data:
+                planet_to_update.gravity = data['gravity']
+            if 'climate' in data:
+                planet_to_update.climate = data['climate']
+            if 'population' in data:
+                planet_to_update.population = data['population']
+
+            db.session.commit()
+            return jsonify({'response': 'Planeta actualizado correctamente'}), 200
+        else:
+            return jsonify({'response': 'Planeta no encontrado'}), 404
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/people/<int:people_id>', methods=['PUT'])
+def update_people(people_id):
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({'error': "Datos incompletos"}), 400
+
+        people_to_update = db.session.execute(
+            db.select(People).filter_by(id=people_id)).scalar()
+
+        if people_to_update:
+
+            if 'name' in data:
+                people_to_update.name = data['name']
+            if 'birth_year' in data:
+                people_to_update.birth_year = data['birth_year']
+            if 'eye_color' in data:
+                people_to_update.eye_color = data['eye_color']
+            if 'gender' in data:
+                people_to_update.gender = data['gender']
+            if 'hair_color' in data:
+                people_to_update.hair_color = data['hair_color']
+            if 'height' in data:
+                people_to_update.height = data['height']
+
+            db.session.commit()
+            return jsonify({'response': 'Personaje actualizado correctamente'}), 200
+        else:
+            return jsonify({'response': 'Personaje no encontrado'}), 404
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/people/<int:people_id>', methods=['DELETE'])
+def delete_people(people_id):
+    try:
+        # Buscar la persona
+        people_to_delete = db.session.execute(
+            db.select(People).filter_by(id=people_id)).scalar()
+
+        if people_to_delete:
+            db.session.delete(people_to_delete)
+            db.session.commit()
+            return jsonify({'response': 'Personaje eliminado correctamente'}), 200
+        else:
+            return jsonify({'response': 'Personaje no encontrado'}), 404
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/planets/<int:planet_id>', methods=['DELETE'])
+def delete_planet(planet_id):
+    try:
+        # Buscar el planeta
+        planet_to_delete = db.session.execute(
+            db.select(Planet).filter_by(id=planet_id)).scalar()
+
+        if planet_to_delete:
+            db.session.delete(planet_to_delete)
+            db.session.commit()
+            return jsonify({'response': 'Planeta eliminado correctamente'}), 200
+        else:
+            return jsonify({'response': 'Planeta no encontrado'}), 404
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 # this only runs if `$ python src/app.py` is executed
